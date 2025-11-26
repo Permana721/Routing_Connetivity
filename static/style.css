@@ -1,0 +1,10 @@
+/* static/style.css */
+body{ background:#f3f6ff; font-family:Inter, Arial, sans-serif; color:#123; }
+.container{ max-width:980px; margin:20px auto; }
+h1{ font-size:26px; margin-bottom:6px; }
+.row{ display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+input[type=text]{ flex:1; padding:8px 10px; border-radius:8px; border:1px solid #e6eef8; }
+input[type=file]{ padding:8px; border-radius:6px; border:1px solid #e6eef8; }
+input[type=color]{ padding:0; border:none; }
+.btn{ padding:10px 12px; border-radius:8px; background:#1575ff; color:#fff; border:none; cursor:pointer; }
+.small{ font-size:13px; color:#666; margin-top:8px; }

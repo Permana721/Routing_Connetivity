@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Routing Connectivity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            background: 
+                radial-gradient(ellipse 85% 50% at 50% 0%, #e1edfd 0%, transparent 70%),
+                linear-gradient(to bottom, #ffffff 0%, #fafcff 100%);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <header class="border-b border-gray-200 top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-gray-900">Routing Connectivity</a>
+                <nav class="flex gap-6">
+                    <a href="#home" class="text-gray-600 hover:text-gray-600 font-medium transition-colors">Home</a>
+                    <a href="#about" class="text-gray-600 hover:text-gray-600 font-medium transition-colors">About</a>
+                    <a href="#tutorial" class="text-gray-600 hover:text-gray-600 font-medium transition-colors">Tutorial</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT - Single Column Layout -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <div id="home" class="grid grid-cols-1 gap-8">
+            <!-- INPUT VIA LINK SECTION -->
+            <section class="mt-6">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Input via Link</h1>
+                <p class="text-gray-600 text-lg">Input a Google Maps link to provide a route.</p>
+            </section>
+            <section class="">
+                <div class="space-y-6">
+                    <!-- Link Input Area -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Folder name (optional)</label>
+                            <input id="folder" type="text" placeholder="Enter folder name" class="w-full p-3 border border-gray-300 bg-transparent rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors">
+                        </div>
+                        
+                        <!-- Dynamic Link Rows Container -->
+                        <div id="linkRows" class="space-y-4"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4 pt-4">
+                        <button id="previewLink" class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">
+                            Preview Route
+                        </button>
+                        <button id="generateLink" class="px-6 py-3 rounded-2xl bg-gray-200 hover:bg-gray-300 transition-colors font-medium shadow-sm">
+                            Generate KMZ
+                        </button>
+                    </div>
+                    <div id="status_link" class="text-sm text-gray-600 mt-2"></div>
+                </div>
+            </section>
+
+            <!-- INPUT VIA KMZ SECTION -->
+            <section class="mt-6">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Input via KMZ</h1>
+                <p class="text-gray-600 text-lg">Upload a .kmz file to inspect its contents directly in your browser.</p>
+            </section>
+            <section>
+                <div class="space-y-6">
+                    <!-- Dynamic KMZ Rows Container -->
+                    <div id="kmzRows" class="space-y-4"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4 pt-4">
+                        <button id="previewKmz" class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">
+                            Preview Route
+                        </button>
+                        <button id="generateKmz" class="px-6 py-3 rounded-2xl bg-gray-200 hover:bg-gray-300 transition-colors font-medium shadow-sm">
+                            Generate KMZ
+                        </button>
+                    </div>
+                    <div id="status_kmz" class="text-sm text-gray-600 mt-2"></div>
+                </div>
+            </section>
+
+            <!-- MAP PREVIEW SECTION -->
+            <section id="map-section" class="bg-white rounded-xl border border-gray-200 p-8 shadow-sm scroll-mt-20">
+                <h2 class="text-2xl font-semibold mb-6">Map preview</h2>
+                <div id="map" class="h-96 rounded-lg border border-gray-300"></div>
+            </section>
+        </div>
+
+        <!-- ABOUT SECTION -->
+        <div id="about" class="bg-white rounded-xl border border-gray-200 p-8 mt-7 shadow-sm scroll-mt-20">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Tentang Routing Connectivity</h1>
+    
+    <div class="space-y-6">
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Apa itu Routing Connectivity?</h2>
+            <p class="text-gray-600 leading-relaxed">
+                Routing Connectivity adalah aplikasi web yang dirancang untuk membantu pengguna mengonversi 
+                rute Google Maps dan file KMZ ke format yang mudah diakses dan dibagikan. Alat ini menyederhanakan 
+                proses ekstraksi serta visualisasi data geografis untuk berbagai keperluan seperti perencanaan, 
+                analisis, dan dokumentasi.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Fitur</h2>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+                <li>Mengonversi tautan Google Maps menjadi file KMZ</li>
+                <li>Mengunggah dan memproses file KMZ</li>
+                <li>Pratinjau peta interaktif untuk visualisasi rute</li>
+                <li>Pengelolaan folder yang dapat disesuaikan</li>
+                <li>Manajemen rute dengan penanda warna</li>
+                <li>Antarmuka drag and drop yang mudah digunakan</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Cara Kerja</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Input melalui Tautan</h3>
+                    <p class="text-gray-600">
+                        Cukup tempelkan URL Google Maps Anda, sesuaikan warna dan nama folder, 
+                        lalu buat file KMZ dengan rute yang Anda inginkan.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Input melalui KMZ</h3>
+                    <p class="text-gray-600">
+                        Unggah file KMZ, KML, atau XLSX yang sudah ada untuk melihat pratinjau 
+                        dan memproses data geografis Anda langsung di browser.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Format yang Didukung</h2>
+            <div class="flex flex-wrap gap-4">
+                <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">.KMZ</span>
+                <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">Tautan Google Maps</span>
+            </div>
+        </section>
+    </div>
+</div>
+
+        <!-- TUTORIAL SECTION -->
+        <div id="tutorial" class="bg-white mt-5 rounded-xl border border-gray-200 p-8 shadow-sm scroll-mt-20">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">Tutorial & Documentation</h1>
+
+            <div class="space-y-10">
+
+                <!-- INTRO -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-3">Introduction</h2>
+                    <p class="text-gray-600 leading-relaxed">
+                        Bagian ini memberikan panduan lengkap mengenai cara menggunakan Routing Connectivity, 
+                        mulai dari memasukkan link Google Maps, melakukan upload file KMZ, hingga mem-preview 
+                        rute pada map dan mengekspor file KMZ hasil pengolahan.
+                    </p>
+                </section>
+
+                <!-- SECTION 1: INPUT VIA LINK -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. Input via Link</h2>
+
+                    <div class="space-y-6">
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 1: Salin Google Maps Route</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Buka Google Maps, buat rute Anda (Driving / Walking / Cycling), lalu salin URL rutenya. 
+                                Link tersebut biasanya mengandung parameter <span class="font-mono bg-gray-200 px-1 rounded">/dir/</span>.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 2: Tempel Link ke Kolom Input</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Tempel link ke kolom "Paste Google Maps link here". Anda dapat menambahkan lebih dari satu rute 
+                                dengan menekan tombol "Add Path" (jika Anda telah menambahkan fitur tersebut). Setiap baris juga dapat 
+                                dikustomisasi warnanya sebelum diproses.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 3: Preview Rute</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Tekan tombol <span class="font-medium">Preview Route</span>. Sistem akan mengirim link ke backend 
+                                untuk diekstrak menjadi list koordinat. Rute kemudian ditampilkan pada map interaktif di bawah.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 4: Generate KMZ</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Jika rute sudah benar, tekan <span class="font-medium">Generate KMZ</span>. File KMZ akan ter-download 
+                                secara otomatis. Anda dapat membuka file tersebut menggunakan Google Earth, QGIS, atau aplikasi GIS lainnya.
+                            </p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- SECTION 2: INPUT VIA KMZ -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">2. Input via KMZ</h2>
+
+                    <div class="space-y-6">
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 1: Upload KMZ</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Drag-and-drop file KMZ ke area upload atau klik area tersebut untuk memilih file secara manual. 
+                                Sistem mendukung multi-upload, sehingga Anda dapat memproses beberapa file sekaligus.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 2: Pilih Warna Rute</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Setiap file dapat diberi warna berbeda sebelum dipetakan maupun diekspor. Ini berguna jika Anda 
+                                ingin memvisualisasikan banyak rute secara bersamaan.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 3: Preview KMZ</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Tekan <span class="font-medium">Preview Route</span> untuk menampilkan rute pada map. 
+                                Anda dapat melakukan zoom, pan, atau overlay rute dari beberapa file sekaligus.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Langkah 4: Generate KMZ Baru</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Tekan <span class="font-medium">Generate KMZ</span> untuk mengekspor seluruh rute menjadi satu KMZ 
+                                terintegrasi (termasuk folder name jika diisi). Berguna untuk merapikan banyak rute menjadi satu file.
+                            </p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- MAP SECTION -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">3. Map Preview</h2>
+                    <p class="text-gray-600 leading-relaxed">
+                        Setelah melakukan preview, semua rute akan ditampilkan pada panel map interaktif. Anda dapat:
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2 mt-2">
+                        <li>Menggerakkan map dengan drag/pan</li>
+                        <li>Zoom menggunakan scroll atau tombol kontrol</li>
+                        <li>Melihat visualisasi warna masing-masing rute</li>
+                        <li>Memastikan koordinat dihasilkan secara akurat sebelum generate</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    /* MAP SETUP */
+    let map = L.map('map').setView([-2.5, 118], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    let previewLayer = L.layerGroup().addTo(map);
+
+    /* Shared limits */
+    const MAX_PATHS = 5;
+
+    /* Function to show max paths alert */
+    function showMaxPathsAlert() {
+        Swal.fire({
+            title: 'Maximum Limit Reached',
+            text: 'Maksimal 5 kolom input yang dapat ditambahkan',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#3b82f6',
+            customClass: {
+                popup: 'rounded-xl',
+                confirmButton: 'px-4 py-2 rounded-lg font-medium'
+            }
+        });
+    }
+
+    /* ---------- LINK MODE UI ---------- */
+    const linkRows = document.getElementById('linkRows');
+    const previewLinkBtn = document.getElementById('previewLink');
+    const generateLinkBtn = document.getElementById('generateLink');
+    const status_link = document.getElementById('status_link');
+
+    function createLinkRow(index, url='', color='#ff0000') {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-4';
+        div.dataset.index = index;
+        div.innerHTML = `
+            <div class="flex-1">
+                <input class="maps_url w-full p-3 border border-gray-300 bg-transparent rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors" 
+                       type="text" 
+                       placeholder="Paste Google Maps link here" 
+                       value="${url}">
+            </div>
+            <input class="path_color w-12 h-12 rounded-lg cursor-pointer border border-gray-300" 
+                   type="color" 
+                   value="${color}">
+            ${index === 0 ? 
+                '<button class="add-btn px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">+</button>' : 
+                '<button class="remove-btn px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">-</button>'
+            }
+        `;
+        linkRows.appendChild(div);
+        
+        // Add event listeners for + and - buttons
+        const addBtn = div.querySelector('.add-btn');
+        const removeBtn = div.querySelector('.remove-btn');
+        
+        if (addBtn) {
+            addBtn.onclick = () => addLinkRow();
+        }
+        
+        if (removeBtn) {
+            removeBtn.onclick = () => {
+                div.remove();
+                refreshLinkRows();
+            };
+        }
+    }
+
+    function addLinkRow() {
+        if (linkRows.querySelectorAll('[data-index]').length >= MAX_PATHS) {
+            showMaxPathsAlert();
+            return;
+        }
+        createLinkRow(linkRows.querySelectorAll('[data-index]').length);
+        refreshLinkRows();
+    }
+
+    function refreshLinkRows() {
+        const rows = linkRows.querySelectorAll('[data-index]');
+        rows.forEach((row, index) => {
+            row.dataset.index = index;
+            
+            // Update button visibility
+            const addBtn = row.querySelector('.add-btn');
+            const removeBtn = row.querySelector('.remove-btn');
+            
+            if (addBtn) addBtn.style.display = index === 0 ? 'block' : 'none';
+            if (removeBtn) removeBtn.style.display = index > 0 ? 'block' : 'none';
+        });
+    }
+
+    createLinkRow(0); // initial row
+
+    previewLinkBtn.onclick = async () => {
+        status_link.innerText = 'Previewing...';
+        previewLayer.clearLayers();
+        const rows = Array.from(linkRows.querySelectorAll('[data-index]'));
+        const items = rows.map((r, i) => ({
+            url: r.querySelector('.maps_url').value.trim(), 
+            name: `Route_${i+1}`,
+            color: r.querySelector('.path_color').value
+        })).filter(x => x.url);
+        
+        if (!items.length) { 
+            status_link.innerText = 'Add at least one link'; 
+            return; 
+        }
+        
+        try {
+            const res = await fetch('/preview_links', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({items})
+            });
+            
+            // Debug: Log status dan content type
+            console.log('Response status:', res.status);
+            console.log('Content-Type:', res.headers.get('content-type'));
+            
+            // Cek apakah response adalah JSON
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await res.text();
+                console.error('Non-JSON response:', text);
+                status_link.innerText = 'Backend error: Expected JSON but got ' + contentType + '. Check console for details.';
+                return;
+            }
+            
+            const data = await res.json();
+            if (!res.ok) { 
+                status_link.innerText = 'Preview error: ' + (data.error || res.statusText); 
+                return; 
+            }
+            status_link.innerText = 'Preview ready';
+            data.routes.forEach(r => {
+                const poly = L.polyline(r.coords, { 
+                    color: '#' + (r.color || 'ff0000'), 
+                    weight: 4 
+                }).addTo(previewLayer);
+                if (poly.getBounds) map.fitBounds(poly.getBounds());
+            });
+            
+            // Auto scroll to map
+            setTimeout(() => {
+                document.getElementById('map-section').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 300);
+        } catch (e) { 
+            console.error('Preview error:', e);
+            status_link.innerText = 'Preview failed: ' + (e.message || e); 
+        }
+    };
+
+    generateLinkBtn.onclick = async () => {
+        status_link.innerText = 'Generating KMZ...';
+        const folder = document.getElementById('folder').value.trim();
+        const rows = Array.from(linkRows.querySelectorAll('[data-index]'));
+        const items = rows.map((r, i) => ({
+            url: r.querySelector('.maps_url').value.trim(), 
+            name: `Route_${i+1}`,
+            color: r.querySelector('.path_color').value
+        })).filter(x => x.url);
+        
+        if (!items.length) { 
+            status_link.innerText = 'No links to generate'; 
+            return; 
+        }
+        
+        const form = new FormData();
+        form.append('folder_name', folder || '');
+        form.append('count', items.length);
+        items.forEach((it, idx) => { 
+            form.append(`url_${idx}`, it.url); 
+            form.append(`name_${idx}`, it.name); 
+            form.append(`color_${idx}`, it.color.replace('#', '')); 
+        });
+        
+        try {
+            const res = await fetch('/generate_multi', { method: 'POST', body: form });
+            if (!res.ok) { 
+                const j = await res.json().catch(() => ({error: 'Unknown'})); 
+                status_link.innerText = 'Generate failed: ' + (j.error || res.statusText); 
+                return; 
+            }
+            const blob = await res.blob();
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(blob); 
+            a.download = (folder || 'multi_paths') + '.kmz'; 
+            a.click();
+            status_link.innerText = 'KMZ downloaded';
+        } catch (e) { 
+            status_link.innerText = 'Generate failed: ' + (e.message || e); 
+        }
+    };
+
+    /* ---------- KMZ MODE UI ---------- */
+    const kmzRows = document.getElementById('kmzRows');
+    const previewKmzBtn = document.getElementById('previewKmz');
+    const generateKmzBtn = document.getElementById('generateKmz');
+    const status_kmz = document.getElementById('status_kmz');
+
+    function createKmzRow(index, color='#ff0000') {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-4';
+        div.dataset.index = index;
+        div.innerHTML = `
+            <div class="flex-1">
+                <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer bg-gray-50">
+                    <input class="file_input absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file" accept=".kmz">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="text-gray-600 font-medium">Drop KMZ file here or click to browse</p>
+                    <p class="text-sm text-gray-400 mt-1 file-status">No file selected</p>
+                </div>
+            </div>
+            <input class="path_color w-12 h-12 rounded-lg cursor-pointer border border-gray-300" 
+                   type="color" 
+                   value="${color}">
+            ${index === 0 ? 
+                '<button class="add-btn px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">+</button>' : 
+                '<button class="remove-btn px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">-</button>'
+            }
+        `;
+        kmzRows.appendChild(div);
+        
+        // File input change handler
+        const fileInput = div.querySelector('.file_input');
+        const fileStatus = div.querySelector('.file-status');
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                fileStatus.textContent = file.name;
+                fileStatus.classList.add('text-green-600', 'font-medium');
+            }
+        });
+        
+        // Add event listeners for + and - buttons
+        const addBtn = div.querySelector('.add-btn');
+        const removeBtn = div.querySelector('.remove-btn');
+        
+        if (addBtn) {
+            addBtn.onclick = () => addKmzRow();
+        }
+        
+        if (removeBtn) {
+            removeBtn.onclick = () => {
+                div.remove();
+                refreshKmzRows();
+            };
+        }
+    }
+
+    function addKmzRow() {
+        if (kmzRows.querySelectorAll('[data-index]').length >= MAX_PATHS) {
+            showMaxPathsAlert();
+            return;
+        }
+        createKmzRow(kmzRows.querySelectorAll('[data-index]').length);
+        refreshKmzRows();
+    }
+
+    function refreshKmzRows() {
+        const rows = kmzRows.querySelectorAll('[data-index]');
+        rows.forEach((row, index) => {
+            row.dataset.index = index;
+            
+            // Update button visibility
+            const addBtn = row.querySelector('.add-btn');
+            const removeBtn = row.querySelector('.remove-btn');
+            
+            if (addBtn) addBtn.style.display = index === 0 ? 'block' : 'none';
+            if (removeBtn) removeBtn.style.display = index > 0 ? 'block' : 'none';
+        });
+    }
+
+    createKmzRow(0); // initial row
+
+    previewKmzBtn.onclick = async () => {
+        status_kmz.innerText = 'Previewing KMZ upload...';
+        previewLayer.clearLayers();
+        const rows = Array.from(kmzRows.querySelectorAll('[data-index]'));
+        const files = [];
+        rows.forEach((r, i) => {
+            const fin = r.querySelector('.file_input');
+            if (fin && fin.files && fin.files[0]) {
+                files.push({
+                    file: fin.files[0], 
+                    name: `Route_${i+1}`,
+                    color: r.querySelector('.path_color').value
+                });
+            }
+        });
+        
+        if (!files.length) { 
+            status_kmz.innerText = 'Select at least one KMZ file'; 
+            return; 
+        }
+        
+        const form = new FormData();
+        files.forEach((it, idx) => { 
+            form.append('file_' + idx, it.file, it.file.name); 
+            form.append('name_' + idx, it.name); 
+            form.append('color_' + idx, it.color.replace('#', '')); 
+        });
+        form.append('count', files.length);
+        
+        try {
+            const res = await fetch('/preview_kmz', { method: 'POST', body: form });
+            const data = await res.json();
+            if (!res.ok) { 
+                status_kmz.innerText = 'Preview error: ' + (data.error || res.statusText); 
+                return; 
+            }
+            status_kmz.innerText = 'Preview ready';
+            data.routes.forEach(r => {
+                const poly = L.polyline(r.coords, { 
+                    color: '#' + (r.color || 'ff0000'), 
+                    weight: 4 
+                }).addTo(previewLayer);
+                if (poly.getBounds) map.fitBounds(poly.getBounds());
+            });
+            
+            // Auto scroll to map
+            setTimeout(() => {
+                document.getElementById('map-section').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 300);
+        } catch (e) { 
+            status_kmz.innerText = 'Preview failed: ' + (e.message || e); 
+        }
+    };
+
+    generateKmzBtn.onclick = async () => {
+        status_kmz.innerText = 'Generating KMZ...';
+        const folder = document.getElementById('folder').value.trim();
+        const rows = Array.from(kmzRows.querySelectorAll('[data-index]'));
+        const files = [];
+        rows.forEach((r, i) => {
+            const fin = r.querySelector('.file_input');
+            if (fin && fin.files && fin.files[0]) {
+                files.push({
+                    file: fin.files[0], 
+                    name: `Route_${i+1}`,
+                    color: r.querySelector('.path_color').value
+                });
+            }
+        });
+        
+        if (!files.length) { 
+            status_kmz.innerText = 'No KMZ files selected'; 
+            return; 
+        }
+        
+        const form = new FormData();
+        files.forEach((it, idx) => { 
+            form.append('file_' + idx, it.file, it.file.name); 
+            form.append('name_' + idx, it.name); 
+            form.append('color_' + idx, it.color.replace('#', '')); 
+        });
+        form.append('count', files.length);
+        form.append('folder_name', folder || '');
+        
+        try {
+            const res = await fetch('/generate_kmz_upload', { method: 'POST', body: form });
+            if (!res.ok) { 
+                const j = await res.json().catch(() => ({error: 'Unknown'})); 
+                status_kmz.innerText = 'Generate failed: ' + (j.error || res.statusText); 
+                return; 
+            }
+            const blob = await res.blob(); 
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(blob); 
+            a.download = (folder || 'multi_paths_upload') + '.kmz'; 
+            a.click();
+            status_kmz.innerText = 'KMZ downloaded';
+        } catch (e) { 
+            status_kmz.innerText = 'Generate failed: ' + (e.message || e); 
+        }
+    };
+    </script>
+</body>
+</html>
