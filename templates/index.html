@@ -60,7 +60,7 @@
                         <button id="previewLink" class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">
                             Preview Route
                         </button>
-                        <button id="generateLink" class="px-6 py-3 rounded-2xl bg-gray-200 hover:bg-gray-300 transition-colors font-medium shadow-sm">
+                        <button id="generateLink" class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">
                             Generate KMZ
                         </button>
                     </div>
@@ -83,7 +83,7 @@
                         <button id="previewKmz" class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">
                             Preview Route
                         </button>
-                        <button id="generateKmz" class="px-6 py-3 rounded-2xl bg-gray-200 hover:bg-gray-300 transition-colors font-medium shadow-sm">
+                        <button id="generateKmz" class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors font-medium shadow-sm">
                             Generate KMZ
                         </button>
                     </div>
@@ -305,7 +305,7 @@
     const generateLinkBtn = document.getElementById('generateLink');
     const status_link = document.getElementById('status_link');
 
-    function createLinkRow(index, url='', color='#ff0000') {
+    function createLinkRow(index, url='', name='', color='#ff0000') {
         const div = document.createElement('div');
         div.className = 'flex items-center gap-4';
         div.dataset.index = index;
@@ -316,6 +316,10 @@
                        placeholder="Paste Google Maps link here" 
                        value="${url}">
             </div>
+            <input class="path_name w-48 p-3 border border-gray-300 bg-transparent rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors" 
+                   type="text" 
+                   placeholder="Path ${index+1} name" 
+                   value="${name || 'Path_'+(index+1)}">
             <input class="path_color w-12 h-12 rounded-lg cursor-pointer border border-gray-300" 
                    type="color" 
                    value="${color}">
@@ -362,6 +366,12 @@
             
             if (addBtn) addBtn.style.display = index === 0 ? 'block' : 'none';
             if (removeBtn) removeBtn.style.display = index > 0 ? 'block' : 'none';
+            
+            // Update path name placeholder if empty
+            const nameInput = row.querySelector('.path_name');
+            if (!nameInput.value) {
+                nameInput.value = `Path_${index+1}`;
+            }
         });
     }
 
@@ -373,7 +383,7 @@
         const rows = Array.from(linkRows.querySelectorAll('[data-index]'));
         const items = rows.map((r, i) => ({
             url: r.querySelector('.maps_url').value.trim(), 
-            name: `Route_${i+1}`,
+            name: r.querySelector('.path_name').value.trim() || `Path_${i+1}`,
             color: r.querySelector('.path_color').value
         })).filter(x => x.url);
         
@@ -435,7 +445,7 @@
         const rows = Array.from(linkRows.querySelectorAll('[data-index]'));
         const items = rows.map((r, i) => ({
             url: r.querySelector('.maps_url').value.trim(), 
-            name: `Route_${i+1}`,
+            name: r.querySelector('.path_name').value.trim() || `Path_${i+1}`,
             color: r.querySelector('.path_color').value
         })).filter(x => x.url);
         
@@ -477,7 +487,7 @@
     const generateKmzBtn = document.getElementById('generateKmz');
     const status_kmz = document.getElementById('status_kmz');
 
-    function createKmzRow(index, color='#ff0000') {
+    function createKmzRow(index, name='', color='#ff0000') {
         const div = document.createElement('div');
         div.className = 'flex items-center gap-4';
         div.dataset.index = index;
@@ -492,6 +502,10 @@
                     <p class="text-sm text-gray-400 mt-1 file-status">No file selected</p>
                 </div>
             </div>
+            <input class="path_name w-48 p-3 border border-gray-300 bg-transparent rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors" 
+                   type="text" 
+                   placeholder="Path ${index+1} name" 
+                   value="${name || 'Path_'+(index+1)}">
             <input class="path_color w-12 h-12 rounded-lg cursor-pointer border border-gray-300" 
                    type="color" 
                    value="${color}">
@@ -549,6 +563,12 @@
             
             if (addBtn) addBtn.style.display = index === 0 ? 'block' : 'none';
             if (removeBtn) removeBtn.style.display = index > 0 ? 'block' : 'none';
+            
+            // Update path name placeholder if empty
+            const nameInput = row.querySelector('.path_name');
+            if (!nameInput.value) {
+                nameInput.value = `Path_${index+1}`;
+            }
         });
     }
 
@@ -564,7 +584,7 @@
             if (fin && fin.files && fin.files[0]) {
                 files.push({
                     file: fin.files[0], 
-                    name: `Route_${i+1}`,
+                    name: r.querySelector('.path_name').value.trim() || `Path_${i+1}`,
                     color: r.querySelector('.path_color').value
                 });
             }
@@ -621,7 +641,7 @@
             if (fin && fin.files && fin.files[0]) {
                 files.push({
                     file: fin.files[0], 
-                    name: `Route_${i+1}`,
+                    name: r.querySelector('.path_name').value.trim() || `Path_${i+1}`,
                     color: r.querySelector('.path_color').value
                 });
             }
